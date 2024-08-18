@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import fs from "fs";
 import mongoose from "mongoose";
 import PropertyModel from "./models/PropertyModel.js";
+import propertyRouter from "./routers/propertyRouter.js";
 const path = "./up/115_111_01.BLM";
 dotenv.config();
 
@@ -13,6 +14,8 @@ const port = process.env.PORT || 5000;
 // Middlewares
 app.use(express.json());
 app.use(cors());
+
+app.use("/property", propertyRouter);
 
 app.get("/", (req, res) => {
   res.send("Haus server is running here....");
