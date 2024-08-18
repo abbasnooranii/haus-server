@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const PropertySchema = new mongoose.Schema({
   AGENT_REF: String,
@@ -118,3 +118,6 @@ const PropertySchema = new mongoose.Schema({
   TLS_SOCIALMEDIA: String,
   "~": String,
 });
+
+const PropertyModel = mongoose.model("properties", PropertySchema);
+export default PropertyModel;

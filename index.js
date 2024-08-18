@@ -1,13 +1,16 @@
-const express = require("express");
-const cors = require("cors");
-require("dotenv").config();
-const fs = require("fs");
-const mongoose = require("mongoose");
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import fs from "fs";
+import mongoose from "mongoose";
+import PropertyModel from "./models/PropertyModel.js";
 const path = "./up/115_111_01.BLM";
+dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5000;
 
+// Middlewares
 app.use(express.json());
 app.use(cors());
 
@@ -16,7 +19,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/restore-data", (req, res) => {
-  const data = fs.readFile(path, "utf8", (err, data) => {
+  const data = fs.readFile(path, "utf8", async (err, data) => {
     if (err) {
       console.error("Error reading file:", err);
       return res.json({ message: "Something went wrong..!" });
@@ -51,6 +54,9 @@ app.get("/restore-data", (req, res) => {
         }, {});
       })
       .filter((record) => record !== null);
+
+    const properties = new PropertyModel(records);
+    await properties.save();
 
     // return "Parsed Data:", records.slice(0, 5); // Display first 5 records
     return res.json(records);
