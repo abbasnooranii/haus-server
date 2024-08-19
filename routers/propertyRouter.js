@@ -1,5 +1,8 @@
+// const { Router } = require("express");
+// const PropertyModel = require("../models/PropertyModel.js");
 import { Router } from "express";
 import PropertyModel from "../models/PropertyModel.js";
+import { ObjectId } from "mongodb";
 
 const propertyRouter = Router();
 
@@ -34,12 +37,24 @@ propertyRouter.get("/", async (req, res) => {
         { ADDRESS_2: new RegExp(query.location, "i") },
         { ADDRESS_3: new RegExp(query.location, "i") },
       ];
-    }  
-    const properties = await PropertyModel.find(filter);
+    }
+    const properties = await PropertyModel.find(filter).limit(5);
     res.send(properties);
   } catch (error) {
     res.status(403).json({ message: "Something went wrong" });
   }
 });
 
+propertyRouter.get("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const properties = await PropertyModel.findById(new ObjectId(id));
+    return res.send(properties);
+  } catch (error) {
+    console.log(error);
+    return res.status(403).json({ message: "Something went wrong" });
+  }
+});
+
+// module.exports = propertyRouter;
 export default propertyRouter;

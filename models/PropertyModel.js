@@ -120,4 +120,6 @@ const PropertySchema = new mongoose.Schema({
 });
 
 const PropertyModel = mongoose.model("properties", PropertySchema);
+
+// module.exports = PropertyModel;
 export default PropertyModel;
