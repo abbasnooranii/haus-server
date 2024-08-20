@@ -45,6 +45,16 @@ propertyRouter.get("/", async (req, res) => {
   }
 });
 
+propertyRouter.get("/page-count", async (req, res) => {
+  try {
+    const properties = await PropertyModel.countDocuments();
+    res.send({ count: Math.ceil(properties / 10) });
+  } catch (error) {
+    console.log(error);
+    res.status(403).send({ message: "Something went wrong" });
+  }
+});
+
 propertyRouter.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
