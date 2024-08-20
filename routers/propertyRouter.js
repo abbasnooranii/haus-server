@@ -1,8 +1,8 @@
 // const { Router } = require("express");
 // const PropertyModel = require("../models/PropertyModel.js");
-import { Router } from "express";
-import PropertyModel from "../models/PropertyModel.js";
-import { ObjectId } from "mongodb";
+const { Router } = require("express");
+const PropertyModel = require("../models/PropertyModel.js");
+const { ObjectId } = require("mongodb");
 
 const propertyRouter = Router();
 
@@ -56,5 +56,5 @@ propertyRouter.get("/:id", async (req, res) => {
   }
 });
 
-// module.exports = propertyRouter;
-export default propertyRouter;
+module.exports = propertyRouter;
+// export default propertyRouter;

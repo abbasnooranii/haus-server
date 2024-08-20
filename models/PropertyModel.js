@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const PropertySchema = new mongoose.Schema({
   AGENT_REF: String,
@@ -121,5 +121,5 @@ const PropertySchema = new mongoose.Schema({
 
 const PropertyModel = mongoose.model("properties", PropertySchema);
 
-// module.exports = PropertyModel;
-export default PropertyModel;
+module.exports = PropertyModel;
+// export default PropertyModel;

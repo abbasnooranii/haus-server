@@ -1,17 +1,18 @@
 // const express = require("express");
 // const cors = require("cors");
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
+const express = require("express");
+const cors = require("cors");
+const dotenv = require("dotenv");
 dotenv.config();
-import mongoose from "mongoose";
-import fs from "fs";
-import PropertyModel from "./models/PropertyModel.js";
-import propertyRouter from "./routers/propertyRouter.js";
+const mongoose = require("mongoose");
+const fs = require("fs");
+const PropertyModel = require("./models/PropertyModel.js");
+const propertyRouter = require("./routers/propertyRouter.js");
+const path = require("path");
 
 const app = express();
 const port = process.env.PORT || 5000;
-const path = "./up/115_111_01.BLM";
+const blmPath = "./up/115_111_01.BLM";
 
 // Middlewares
 app.use(express.json());
@@ -25,10 +26,14 @@ app.use(
 app.get("/", (req, res) => {
   res.send("Server is running here...");
 });
+
+// Serving the images
+app.use("/api/images", express.static(path.join(__dirname, "up")));
+
 app.use("/property", propertyRouter);
 
 app.get("/restore-data", (req, res) => {
-  const data = fs.readFile(path, "utf8", async (err, data) => {
+  const data = fs.readFile(blmPath, "utf8", async (err, data) => {
     if (err) {
       console.error("Error reading file:", err);
       return res.json({ message: "Something went wrong..!" });
@@ -82,6 +87,7 @@ const connect = async () => {
     console.log(error);
   }
 };
+
 app.listen(port, () => {
   connect();
   console.log("Server started successfully");
