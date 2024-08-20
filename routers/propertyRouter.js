@@ -9,6 +9,8 @@ const propertyRouter = Router();
 propertyRouter.get("/", async (req, res) => {
   try {
     const query = req.query;
+
+    // Controlling filter
     const filter = {};
     if (query.agent_ref) {
       filter.AGENT_REF = new RegExp(query.agent_ref, "i");
@@ -38,7 +40,15 @@ propertyRouter.get("/", async (req, res) => {
         { ADDRESS_3: new RegExp(query.location, "i") },
       ];
     }
-    const properties = await PropertyModel.find(filter).limit(5);
+    // Controlling pagination
+    const itemsPerPage = 10;
+    let skipCount = 0;
+    if (query.selectedPage) {
+      skipCount = (query.selectedPage - 1) * itemsPerPage;
+    }
+    const properties = await PropertyModel.find(filter)
+      .skip(skipCount)
+      .limit(itemsPerPage);
     res.send(properties);
   } catch (error) {
     res.status(403).json({ message: "Something went wrong" });
