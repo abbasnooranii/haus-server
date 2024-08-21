@@ -15,7 +15,7 @@ propertyRouter.get("/", async (req, res) => {
     if (query.agent_ref) {
       filter.AGENT_REF = new RegExp(query.agent_ref, "i");
     }
-    if (query.badrooms !== "0") {
+    if (query.badrooms && query.badrooms !== "0") {
       filter.BEDROOMS = query.badrooms;
     }
     if (query.max_price || query.min_price) {
@@ -31,10 +31,10 @@ propertyRouter.get("/", async (req, res) => {
         ],
       };
     }
-    if (query.prop_sub_id !== "") {
+    if (query.prop_sub_id && query.prop_sub_id !== "") {
       filter.PROP_SUB_ID = query.prop_sub_id;
     }
-    if (query.location !== "") {
+    if (query.location && query.location !== "") {
       filter.$or = [
         { ADDRESS_2: new RegExp(query.location, "i") },
         { ADDRESS_3: new RegExp(query.location, "i") },
@@ -49,7 +49,8 @@ propertyRouter.get("/", async (req, res) => {
     const properties = await PropertyModel.find(filter)
       .skip(skipCount)
       .limit(itemsPerPage);
-    res.send(properties);
+
+    return res.send(properties);
   } catch (error) {
     res.status(403).json({ message: "Something went wrong" });
   }
