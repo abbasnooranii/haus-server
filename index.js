@@ -9,6 +9,8 @@ const fs = require("fs");
 const PropertyModel = require("./models/PropertyModel.js");
 const propertyRouter = require("./routers/propertyRouter.js");
 const path = require("path");
+const nodemailer = require("nodemailer");
+const Handlebars = require("handlebars");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -23,6 +25,17 @@ app.use(
   })
 );
 
+// Nodemailer transporter
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  auth: {
+    user: "pureponno174@gmail.com",
+    pass: "jdjwdsvdcpyqrnvx",
+  },
+});
+
 app.get("/", (req, res) => {
   res.send("Server is running here...");
 });
@@ -31,6 +44,72 @@ app.get("/", (req, res) => {
 app.use("/api/images", express.static(path.join(__dirname, "up")));
 
 app.use("/property", propertyRouter);
+
+app.post("/send-rafer-mail", async (req, res) => {
+  try {
+    const {
+      which_area,
+      landlord_or_seller,
+      student_or_not,
+      owner_name,
+      owner_phone,
+      owner_email,
+      owner_address,
+      user_name,
+      user_phone,
+      user_email,
+      user_address,
+    } = req.body;
+    if (
+      !which_area ||
+      !landlord_or_seller ||
+      !student_or_not ||
+      !owner_name ||
+      !owner_phone ||
+      !owner_email ||
+      !owner_address ||
+      !user_name ||
+      !user_phone ||
+      !user_email ||
+      !user_address
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Please provide all the required fields" });
+    }
+
+    const source = fs
+      .readFileSync("email-templates/template1.html", "utf-8")
+      .toString();
+    const template = Handlebars.compile(source);
+    const replacements = {
+      which_area,
+      landlord_or_seller,
+      student_or_not,
+      owner_name,
+      owner_phone,
+      owner_email,
+      owner_address,
+      user_name,
+      user_phone,
+      user_email,
+      user_address,
+    };
+    const htmlToSend = template(replacements);
+
+    const info = await transporter.sendMail({
+      from: '"Haus" <haus@property.email>', // sender address
+      to: "mahidunnobi2019@gmail.com", // list of receivers
+      subject: "Referral Form Submission", // Subject line
+      html: htmlToSend, // html body
+    });
+    res.send({ message: "Message sent", info });
+    // res.send({ message: "Message sent", reqBody });
+  } catch (error) {
+    console.log(error);
+    res.send({ message: "Something went wrong", error });
+  }
+});
 
 app.get("/restore-data", (req, res) => {
   const data = fs.readFile(blmPath, "utf8", async (err, data) => {
