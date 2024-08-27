@@ -110,6 +110,42 @@ app.post("/send-rafer-mail", async (req, res) => {
     res.send({ message: "Something went wrong", error });
   }
 });
+app.post("/send-ready-mail", async (req, res) => {
+  try {
+    const reqBody = req.body;
+    const { name, email, phone_number, property_id, message } = req.body;
+    if (!name || !email || !phone_number || !property_id || !message) {
+      return res
+        .status(400)
+        .json({ message: "Please provide all the required fields" });
+    }
+
+    const source = fs
+      .readFileSync("email-templates/template2.html", "utf-8")
+      .toString();
+    const template = Handlebars.compile(source);
+    const replacements = {
+      name,
+      email,
+      phone_number,
+      property_id,
+      message,
+    };
+    const htmlToSend = template(replacements);
+
+    const info = await transporter.sendMail({
+      from: '"Haus" <haus@property.email>', // sender address
+      to: "mahidunnobi2019@gmail.com", // list of receivers
+      subject: "Contact form", // Subject line
+      html: htmlToSend, // html body
+    });
+    res.send({ message: "Message sent", info });
+    // res.send({ message: "Message sent", reqBody });
+  } catch (error) {
+    console.log(error);
+    res.send({ message: "Something went wrong", error });
+  }
+});
 
 app.get("/restore-data", (req, res) => {
   const data = fs.readFile(blmPath, "utf8", async (err, data) => {
