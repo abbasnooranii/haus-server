@@ -45,6 +45,7 @@ app.use("/api/images", express.static(path.join(__dirname, "up")));
 
 app.use("/property", propertyRouter);
 
+// Email Routes
 app.post("/send-rafer-mail", async (req, res) => {
   try {
     const {
@@ -110,9 +111,10 @@ app.post("/send-rafer-mail", async (req, res) => {
     res.send({ message: "Something went wrong", error });
   }
 });
-app.post("/send-ready-mail", async (req, res) => {
+app.post("/send-touch-mail", async (req, res) => {
   try {
     const reqBody = req.body;
+
     const { name, email, phone_number, property_id, message } = req.body;
     if (!name || !email || !phone_number || !property_id || !message) {
       return res
@@ -129,6 +131,42 @@ app.post("/send-ready-mail", async (req, res) => {
       email,
       phone_number,
       property_id,
+      message,
+    };
+    const htmlToSend = template(replacements);
+
+    const info = await transporter.sendMail({
+      from: '"Haus" <haus@property.email>', // sender address
+      to: "mahidunnobi2019@gmail.com", // list of receivers
+      subject: "Contact form", // Subject line
+      html: htmlToSend, // html body
+    });
+    res.send({ message: "Message sent", info });
+    // res.send({ message: "Message sent", reqBody });
+  } catch (error) {
+    console.log(error);
+    res.send({ message: "Something went wrong", error });
+  }
+});
+app.post("/send-ready-mail", async (req, res) => {
+  try {
+    const reqBody = req.body;
+    const { name, email, phone_number, area, message } = req.body;
+    if (!name || !email || !area || !area || !message) {
+      return res
+        .status(400)
+        .json({ message: "Please provide all the required fields" });
+    }
+
+    const source = fs
+      .readFileSync("email-templates/template3.html", "utf-8")
+      .toString();
+    const template = Handlebars.compile(source);
+    const replacements = {
+      name,
+      email,
+      phone_number,
+      area,
       message,
     };
     const htmlToSend = template(replacements);
