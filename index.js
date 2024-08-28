@@ -101,7 +101,7 @@ app.post("/send-rafer-mail", async (req, res) => {
 
     const info = await transporter.sendMail({
       from: '"Haus" <haus@property.email>', // sender address
-      to: "mahidunnobi2019@gmail.com", // list of receivers
+      to: "developershouse@hotmail.com", // list of receivers
       subject: "Referral Form Submission", // Subject line
       html: htmlToSend, // html body
     });
@@ -138,7 +138,7 @@ app.post("/send-touch-mail", async (req, res) => {
 
     const info = await transporter.sendMail({
       from: '"Haus" <haus@property.email>', // sender address
-      to: "mahidunnobi2019@gmail.com", // list of receivers
+      to: "developershouse@hotmail.com", // list of receivers
       subject: "Contact form", // Subject line
       html: htmlToSend, // html body
     });
@@ -174,7 +174,7 @@ app.post("/send-ready-mail", async (req, res) => {
 
     const info = await transporter.sendMail({
       from: '"Haus" <haus@property.email>', // sender address
-      to: "mahidunnobi2019@gmail.com", // list of receivers
+      to: "developershouse@hotmail.com", // list of receivers
       subject: "Contact form", // Subject line
       html: htmlToSend, // html body
     });
