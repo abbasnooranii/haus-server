@@ -13,6 +13,9 @@ const nodemailer = require("nodemailer");
 const Handlebars = require("handlebars");
 const cron = require("node-cron");
 const authRouter = require("./routers/authRouter.js");
+const cookieParser = require("cookie-parser");
+const verifyToken = require("./utiles/middleware.js");
+const userRouter = require("./routers/userRouter.js");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -26,6 +29,7 @@ app.use(
     credentials: true,
   })
 );
+app.use(cookieParser());
 
 // Nodemailer transporter
 const transporter = nodemailer.createTransport({
@@ -47,6 +51,7 @@ app.use("/api/images", express.static(path.join(__dirname, "up")));
 
 app.use("/property", propertyRouter);
 app.use("/auth", authRouter);
+app.use("/user", userRouter);
 
 // Email Routes
 app.post("/send-rafer-mail", async (req, res) => {
