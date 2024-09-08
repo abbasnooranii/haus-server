@@ -7,6 +7,7 @@ const UserSchema = new Schema({
   current_setuation: String,
   alerts: String,
   saved_properties: [String],
+  // properties: [{ type: mongoose.Schema.Types.ObjectId, ref: "Property" }],
 });
 
 const User = new mongoose.model("users", UserSchema);
