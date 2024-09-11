@@ -9,14 +9,14 @@ const propertyRouter = Router();
 propertyRouter.get("/", async (req, res) => {
   try {
     const query = req.query;
-
     // Controlling filter
     const filter = {};
     if (query.agent_ref) {
       filter.AGENT_REF = new RegExp(query.agent_ref, "i");
     }
-    if (query.badrooms && query.badrooms !== "0") {
-      filter.BEDROOMS = query.badrooms;
+    if (query.badrooms) {
+      const bedroomsArray = query.badrooms.split(",").map(Number); // Convert the "4,5,7,8" string into an array of numbers
+      filter.BEDROOMS = { $in: bedroomsArray };
     }
     if (query.max_price || query.min_price) {
       filter.$expr = {
@@ -52,6 +52,7 @@ propertyRouter.get("/", async (req, res) => {
 
     return res.send(properties);
   } catch (error) {
+    console.log(error);
     res.status(403).json({ message: "Something went wrong" });
   }
 });
@@ -66,7 +67,8 @@ propertyRouter.get("/page-count", async (req, res) => {
       filter.AGENT_REF = new RegExp(query.agent_ref, "i");
     }
     if (query.badrooms && query.badrooms !== "0") {
-      filter.BEDROOMS = query.badrooms;
+      const bedroomsArray = query.badrooms.split(",").map(Number); // Convert the "4,5,7,8" string into an array of numbers
+      filter.BEDROOMS = { $in: bedroomsArray };
     }
     if (query.max_price || query.min_price) {
       filter.$expr = {
