@@ -7,6 +7,7 @@ const UserSchema = new Schema({
   current_setuation: String,
   alerts: String,
   saved_properties: [String],
+  saved_searches: [{ type: Schema.Types.ObjectId, ref: "saveSearches" }],
   // properties: [{ type: mongoose.Schema.Types.ObjectId, ref: "Property" }],
 });
 

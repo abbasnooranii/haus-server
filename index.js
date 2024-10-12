@@ -16,6 +16,7 @@ const authRouter = require("./routers/authRouter.js");
 const cookieParser = require("cookie-parser");
 const verifyToken = require("./utiles/middleware.js");
 const userRouter = require("./routers/userRouter.js");
+const searchRouter = require("./routers/searchRouter.js");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -52,6 +53,7 @@ app.use("/api/images", express.static(path.join(__dirname, "up")));
 app.use("/property", propertyRouter);
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
+app.use("/save-search", searchRouter);
 
 // Email Routes
 app.post("/send-rafer-mail", async (req, res) => {
