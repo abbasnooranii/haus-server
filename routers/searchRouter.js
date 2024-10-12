@@ -24,4 +24,11 @@ searchRouter.post("/", verifyToken, async (req, res) => {
   return res.json({ message: "Search Saved", success: true });
 });
 
+searchRouter.get("/", verifyToken, async (req, res) => {
+  const { email } = req.user;
+  const user = await User.findOne({ email }).populate("saved_searches");
+  console.log(user.saved_searches);
+  return res.json({ message: "Successfull", success: true });
+});
+
 module.exports = searchRouter;
