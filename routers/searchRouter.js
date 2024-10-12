@@ -36,8 +36,9 @@ searchRouter.post("/", verifyToken, async (req, res) => {
 
 searchRouter.get("/", verifyToken, async (req, res) => {
   const { email } = req.user;
-  const user = await User.findOne({ email }).populate("saved_searches");
-  return res.json({ message: "Successfull", success: true });
+  const user = await User.findOne({ email });
+  const savedSearches = await SaveSearch.find({ user_id: user._id });
+  return res.json(savedSearches);
 });
 
 searchRouter.delete("/:id", verifyToken, async (req, res) => {
