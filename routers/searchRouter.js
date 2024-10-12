@@ -14,21 +14,56 @@ searchRouter.post("/", verifyToken, async (req, res) => {
   //   Creating the  Save Search document
   const saveSearch = new SaveSearch({
     user_id: user._id,
-    ...reqBody,
+    type: reqBody.type,
+    bedRooms: reqBody.bedRooms,
+    min_price: reqBody.min_price,
+    max_price: reqBody.max_price,
+    location: reqBody.location,
+    property_type: reqBody.property_type,
   });
   await saveSearch.save();
 
   user.saved_searches.push(saveSearch._id);
   await user.save();
 
-  return res.json({ message: "Search Saved", success: true });
+  return res.json({
+    message: "Search Saved",
+    success: true,
+    id: saveSearch._id,
+  });
 });
 
 searchRouter.get("/", verifyToken, async (req, res) => {
   const { email } = req.user;
   const user = await User.findOne({ email }).populate("saved_searches");
-  console.log(user.saved_searches);
   return res.json({ message: "Successfull", success: true });
+});
+
+searchRouter.post("/check", verifyToken, async (req, res) => {
+  const reqBody = req.body;
+  //   Fetching the user
+  const { email } = req.user;
+  const user = await User.findOne({ email });
+
+  //   Creating the  Save Search document
+  const saveSearch = await SaveSearch.findOne({
+    user_id: user._id,
+    type: reqBody.type,
+    bedRooms: reqBody.bedRooms,
+    min_price: reqBody.min_price,
+    max_price: reqBody.max_price,
+    location: reqBody.location,
+    property_type: reqBody.property_type,
+  });
+
+  if (!saveSearch) {
+    return res.json({ message: "Search not saved", success: false });
+  }
+  return res.json({
+    message: "Search found",
+    success: true,
+    id: saveSearch._id,
+  });
 });
 
 module.exports = searchRouter;
