@@ -2,6 +2,7 @@ const { Router } = require("express");
 const verifyToken = require("../utiles/middleware");
 const User = require("../models/UserModel");
 const SaveSearch = require("../models/SaveSearchModel");
+const mongodb = require("mongodb");
 
 const searchRouter = Router();
 
@@ -37,6 +38,33 @@ searchRouter.get("/", verifyToken, async (req, res) => {
   const { email } = req.user;
   const user = await User.findOne({ email }).populate("saved_searches");
   return res.json({ message: "Successfull", success: true });
+});
+
+searchRouter.delete("/:id", verifyToken, async (req, res) => {
+  const { id } = req.params;
+
+  const { email } = req.user;
+  const user = await User.findOne({ email });
+
+  const saveSearch = await SaveSearch.findOne({
+    _id: new mongodb.ObjectId(id),
+  });
+  // Removing the search id from user object document
+  const newSaveSearch = user.saved_searches.filter((rid) => rid != id);
+
+  user.saved_searches = newSaveSearch;
+  await user.save();
+
+  const deleteRes = await saveSearch.deleteOne();
+
+  if (deleteRes.deletedCount > 0) {
+    return res.json({ message: "Search removed successfully", success: true });
+  }
+
+  return res.json({
+    message: "Something went wrong removing search",
+    success: false,
+  });
 });
 
 searchRouter.post("/check", verifyToken, async (req, res) => {
