@@ -68,7 +68,11 @@ searchRouter.delete("/:id", verifyToken, async (req, res) => {
   });
 });
 
-searchRouter.post("/check", verifyToken, async (req, res) => {
+searchRouter.post("/check", async (req, res) => {
+  const token = req.cookies.haus_token;
+  if (!token) {
+    return res.send({ message: "User not logged in yet." });
+  }
   const reqBody = req.body;
   //   Fetching the user
   const { email } = req.user;
