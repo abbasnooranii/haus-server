@@ -20,6 +20,7 @@ const searchRouter = require("./routers/searchRouter.js");
 const PrevPropertyModel = require("./models/PrevPropertiesModel.js");
 const retriveDataFromFile = require("./utiles/retriveData.js");
 const CalculatedPropertyModel = require("./models/CalculatedPropertiesModel.js");
+const calculatePriceChange = require("./utiles/calculatePriceChange.js");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -199,50 +200,24 @@ app.post("/send-ready-mail", async (req, res) => {
 });
 
 app.get("/restore-data", async (req, res) => {
-  let rawData = await retriveDataFromFile();
-  const oldProperties = await PropertyModel.find();
+  // --------------Updating the PrevProperty and CurrProperty Databases with the raw data----------
+  // let rawData = await retriveDataFromFile();
+  // const oldProperties = await PropertyModel.find();
 
-  // Getting old properties properties to the old table
-  if (oldProperties.length > 0) {
-    await PrevPropertyModel.deleteMany();
-    await PrevPropertyModel.insertMany(oldProperties);
-  }
+  // // Getting old properties properties to the old table
+  // if (oldProperties.length > 0) {
+  //   await PrevPropertyModel.deleteMany();
+  //   await PrevPropertyModel.insertMany(oldProperties);
+  // }
 
-  // Saving the brand new data to the NewPropertiModel after deleting it.
-  await PropertyModel.deleteMany();
-  await PropertyModel.insertMany(rawData);
+  // // Saving the brand new data to the NewPropertiModel after deleting it.
+  // await PropertyModel.deleteMany();
+  // await PropertyModel.insertMany(rawData);
 
   //---------------Calculating the price up down and saving it to database--------------------
-  let CalculatedProperties = [];
+  await calculatePriceChange();
 
-  const currentProperties = await PropertyModel.find().select(
-    "AGENT_REF PRICE"
-  );
-  const prevProperties = await PrevPropertyModel.find().select(
-    "AGENT_REF PRICE"
-  );
-
-  prevProperties.forEach((Pd) => {
-    const { AGENT_REF: Pd_Ref, PRICE: Pd_Price } = Pd;
-    const currentProp = currentProperties.find((cd) => cd.AGENT_REF === Pd_Ref);
-
-    if (currentProp && Pd_Price !== currentProp.PRICE) {
-      const calculatedData = {
-        AGENT_REF: currentProp.AGENT_REF,
-        PREV_PRICE: Pd_Price,
-        CURR_PRICE: currentProp.PRICE,
-        STATUS:
-          Number(Pd_Price) > Number(currentProp.PRICE)
-            ? `price_drop`
-            : "price_increase",
-      };
-      CalculatedProperties.push(calculatedData);
-    }
-  });
-
-  await CalculatedPropertyModel.insertMany(CalculatedProperties);
-
-  return res.json({ CalculatedProperties });
+  return res.json({ message: "Data restored" });
 });
 
 // Automatically data will be restored in 12:00 AM everyday
