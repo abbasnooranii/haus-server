@@ -119,7 +119,7 @@ const NewPropertySchema = new mongoose.Schema({
   "~": String,
 });
 
-const NewPropertyModel = mongoose.model("properties", NewPropertySchema);
+const NewPropertyModel = mongoose.model("newProperties", NewPropertySchema);
 
 module.exports = NewPropertyModel;
 // export default PropertyModel;

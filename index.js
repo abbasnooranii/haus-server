@@ -17,6 +17,8 @@ const cookieParser = require("cookie-parser");
 const verifyToken = require("./utiles/middleware.js");
 const userRouter = require("./routers/userRouter.js");
 const searchRouter = require("./routers/searchRouter.js");
+const NewPropertyModel = require("./models/NewPropertiesModel.js");
+const retriveDataFromFile = require("./utiles/retriveData.js");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -195,49 +197,10 @@ app.post("/send-ready-mail", async (req, res) => {
   }
 });
 
-app.get("/restore-data", (req, res) => {
-  const data = fs.readFile(blmPath, "utf8", async (err, data) => {
-    if (err) {
-      console.error("Error reading file:", err);
-      return res.json({ message: "Something went wrong..!" });
-    }
+app.get("/restore-data", async (req, res) => {
+  let rawData = await retriveDataFromFile();
 
-    // Split file content by lines
-    const lines = data.split("\n");
-    //   console.log("First 10 lines:", lines.slice(0, 10));
-
-    // Assuming metadata is within the first few lines
-    const metadata = lines.slice(0, 5);
-
-    // Find the line starting with '#DEFINITION#' and extract columns
-    const definitionIndex = lines.findIndex((line) =>
-      line.includes("#DEFINITION#")
-    );
-    const columns = lines[definitionIndex + 1].trim().split("^");
-    // //   console.log("Columns:", columns);
-
-    // // ------Getting the actual data
-    const dataStartIndex =
-      lines.findIndex((line) => line.includes("#DATA#")) + 1;
-    const dataLines = lines.slice(dataStartIndex);
-
-    const records = dataLines
-      .map((line) => {
-        if (line.trim() === "") return null;
-        const fields = line.trim().split("^");
-        return fields.reduce((obj, field, index) => {
-          obj[columns[index]] = field;
-          return obj;
-        }, {});
-      })
-      .filter((record) => record !== null);
-
-    const deleteRes = await PropertyModel.deleteMany();
-    const properties = await PropertyModel.insertMany(records);
-
-    // return "Parsed Data:", records.slice(0, 5); // Display first 5 records
-    return res.json({ message: "Data Restored" });
-  });
+  return res.json({ rawData });
 });
 
 // Automatically data will be restored in 12:00 AM everyday
