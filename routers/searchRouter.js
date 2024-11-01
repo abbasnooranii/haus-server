@@ -3,6 +3,7 @@ const verifyToken = require("../utiles/middleware");
 const User = require("../models/UserModel");
 const SaveSearch = require("../models/SaveSearchModel");
 const mongodb = require("mongodb");
+const jwt = require("jsonwebtoken");
 
 const searchRouter = Router();
 
@@ -73,9 +74,21 @@ searchRouter.post("/check", async (req, res) => {
   if (!token) {
     return res.send({ message: "User not logged in yet." });
   }
+
   const reqBody = req.body;
+
   //   Fetching the user
-  const { email } = req.user;
+  let tokenUser = {};
+
+  jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
+    if (err) {
+      console.log(err);
+      return res.status(401).send({ message: "Unauthorized access!" });
+    }
+    tokenUser = decoded;
+  });
+
+  const { email } = tokenUser;
   const user = await User.findOne({ email });
 
   //   Creating the  Save Search document
