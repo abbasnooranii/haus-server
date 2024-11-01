@@ -17,8 +17,9 @@ const cookieParser = require("cookie-parser");
 const verifyToken = require("./utiles/middleware.js");
 const userRouter = require("./routers/userRouter.js");
 const searchRouter = require("./routers/searchRouter.js");
-const NewPropertyModel = require("./models/NewPropertiesModel.js");
+const PrevPropertyModel = require("./models/PrevPropertiesModel.js");
 const retriveDataFromFile = require("./utiles/retriveData.js");
+const CalculatedPropertyModel = require("./models/CalculatedPropertiesModel.js");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -198,24 +199,26 @@ app.post("/send-ready-mail", async (req, res) => {
 });
 
 app.get("/restore-data", async (req, res) => {
-  // let rawData = await retriveDataFromFile();
-  // const oldProperties = await NewPropertyModel.find();
+  let rawData = await retriveDataFromFile();
+  const oldProperties = await PropertyModel.find();
 
-  // // Getting old properties properties to the old table
-  // if (oldProperties.length > 0) {
-  //   await PropertyModel.deleteMany();
-  //   await PropertyModel.insertMany(oldProperties);
-  // }
+  // Getting old properties properties to the old table
+  if (oldProperties.length > 0) {
+    await PrevPropertyModel.deleteMany();
+    await PrevPropertyModel.insertMany(oldProperties);
+  }
 
-  // // Saving the brand new data to the NewPropertiModel after deleting it.
-  // await NewPropertyModel.deleteMany();
-  // await NewPropertyModel.insertMany(rawData);
+  // Saving the brand new data to the NewPropertiModel after deleting it.
+  await PropertyModel.deleteMany();
+  await PropertyModel.insertMany(rawData);
 
-  //---------------Calculating the price up down--------------------
+  //---------------Calculating the price up down and saving it to database--------------------
   let CalculatedProperties = [];
 
-  const prevProperties = await PropertyModel.find().select("AGENT_REF PRICE");
-  const currentProperties = await NewPropertyModel.find().select(
+  const currentProperties = await PropertyModel.find().select(
+    "AGENT_REF PRICE"
+  );
+  const prevProperties = await PrevPropertyModel.find().select(
     "AGENT_REF PRICE"
   );
 
@@ -236,6 +239,8 @@ app.get("/restore-data", async (req, res) => {
       CalculatedProperties.push(calculatedData);
     }
   });
+
+  await CalculatedPropertyModel.insertMany(CalculatedProperties);
 
   return res.json({ CalculatedProperties });
 });

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const NewPropertySchema = new mongoose.Schema({
+const PrevPropertySchema = new mongoose.Schema({
   AGENT_REF: String,
   ADDRESS_1: String,
   ADDRESS_2: String,
@@ -119,7 +119,7 @@ const NewPropertySchema = new mongoose.Schema({
   "~": String,
 });
 
-const NewPropertyModel = mongoose.model("newProperties", NewPropertySchema);
+const PrevPropertyModel = mongoose.model("prevProperties", PrevPropertySchema);
 
-module.exports = NewPropertyModel;
+module.exports = PrevPropertyModel;
 // export default PropertyModel;
