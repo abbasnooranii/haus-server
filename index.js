@@ -198,9 +198,46 @@ app.post("/send-ready-mail", async (req, res) => {
 });
 
 app.get("/restore-data", async (req, res) => {
-  let rawData = await retriveDataFromFile();
+  // let rawData = await retriveDataFromFile();
+  // const oldProperties = await NewPropertyModel.find();
 
-  return res.json({ rawData });
+  // // Getting old properties properties to the old table
+  // if (oldProperties.length > 0) {
+  //   await PropertyModel.deleteMany();
+  //   await PropertyModel.insertMany(oldProperties);
+  // }
+
+  // // Saving the brand new data to the NewPropertiModel after deleting it.
+  // await NewPropertyModel.deleteMany();
+  // await NewPropertyModel.insertMany(rawData);
+
+  //---------------Calculating the price up down--------------------
+  let CalculatedProperties = [];
+
+  const prevProperties = await PropertyModel.find().select("AGENT_REF PRICE");
+  const currentProperties = await NewPropertyModel.find().select(
+    "AGENT_REF PRICE"
+  );
+
+  prevProperties.forEach((Pd) => {
+    const { AGENT_REF: Pd_Ref, PRICE: Pd_Price } = Pd;
+    const currentProp = currentProperties.find((cd) => cd.AGENT_REF === Pd_Ref);
+
+    if (currentProp && Pd_Price !== currentProp.PRICE) {
+      const calculatedData = {
+        AGENT_REF: currentProp.AGENT_REF,
+        PREV_PRICE: Pd_Price,
+        CURR_PRICE: currentProp.PRICE,
+        STATUS:
+          Number(Pd_Price) > Number(currentProp.PRICE)
+            ? `price_drop`
+            : "price_increase",
+      };
+      CalculatedProperties.push(calculatedData);
+    }
+  });
+
+  return res.json({ CalculatedProperties });
 });
 
 // Automatically data will be restored in 12:00 AM everyday
