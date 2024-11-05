@@ -5,57 +5,70 @@ const Handlebars = require("handlebars");
 const transporter = require("./emailTransportar.js");
 const fs = require("fs");
 
+// ---- Registering a helper function to increament the index of each link----
+Handlebars.registerHelper("increment", function (index) {
+  return index + 1;
+});
+
 const priceReductionCheck = async () => {
-  // ---- Registering a helper function to increament the index of each link----
-  Handlebars.registerHelper("increment", function (index) {
-    return index + 1;
-  });
+  // Setting the email template
+
+  const source = fs
+    .readFileSync("email-templates/template4.html", "utf-8")
+    .toString();
+  const template = Handlebars.compile(source);
 
   const users = await User.find();
   if (users.length < 1) {
     return;
   }
 
-  //  ------------ Iterating through each user----------
-  for (let user of users) {
-    const priceReducedPropertiesLinks = [];
-    // ----------- Getting all the saved searched properties of a user----------
-    const savedSearchProperties = await UserSavedPropertyModel.find({
-      USER_EMAIL: user.email,
-    });
-    // ---------- Iterating through  all  the properties and compearing the price--------
-    for (let property of savedSearchProperties) {
-      const rawProperty = await PropertyModel.findOne({
-        AGENT_REF: property.AGENT_REF,
+  await Promise.all(
+    users.map(async (user) => {
+      // Retrieve all saved properties for the user in one query
+      const savedSearchProperties = await UserSavedPropertyModel.find({
+        USER_EMAIL: user.email,
       });
 
-      const oldPrice = parseInt(property.PRICE);
-      const newPrice = parseInt(rawProperty.PRICE);
-      if (newPrice < oldPrice) {
-        priceReducedPropertiesLinks.push({
-          url: `${process.env.CLIENT_URL}/hauses/${rawProperty._id}`,
+      if (savedSearchProperties.length === 0) return;
+
+      const priceReducedPropertiesLinks = [];
+
+      // Process each saved property for price comparison
+      await Promise.all(
+        savedSearchProperties.map(async (property) => {
+          const rawProperty = await PropertyModel.findOne({
+            AGENT_REF: property.AGENT_REF,
+          });
+
+          if (!rawProperty) return; // Skip if property not found
+
+          const oldPrice = parseInt(property.PRICE);
+          const newPrice = parseInt(rawProperty.PRICE);
+
+          // Add to links if the price has dropped
+          if (newPrice < oldPrice) {
+            priceReducedPropertiesLinks.push({
+              url: `${process.env.CLIENT_URL}/hauses/${rawProperty._id}`,
+            });
+          }
+        })
+      );
+
+      // Only send email if there are price-reduced properties
+      if (priceReducedPropertiesLinks.length > 0) {
+        const replacements = { links: priceReducedPropertiesLinks };
+        const htmlToSend = template(replacements);
+
+        await transporter.sendMail({
+          from: '"Haus" <haus@property.email>',
+          to: "mdmahidunnobi@gmail.com", // use user's email directly
+          subject: "Price Drop!",
+          html: htmlToSend,
         });
       }
-    }
-    if (priceReducedPropertiesLinks.length > 0) {
-      const source = fs
-        .readFileSync("email-templates/template4.html", "utf-8")
-        .toString();
-      const template = Handlebars.compile(source);
-      const replacements = {
-        links: priceReducedPropertiesLinks,
-      };
-      const htmlToSend = template(replacements);
-
-      const info = await transporter.sendMail({
-        from: '"Haus" <haus@property.email>', // sender address
-        to: "mdmahidunnobi@gmail.com", // list of receivers
-        subject: "Price Drop!", // Subject line
-        html: htmlToSend, // html body
-      });
-      //   console.log("Email send");
-    }
-  }
+    })
+  );
 };
 
 module.exports = priceReductionCheck;
