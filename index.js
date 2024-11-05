@@ -21,6 +21,7 @@ const PrevPropertyModel = require("./models/PrevPropertiesModel.js");
 const retriveDataFromFile = require("./utiles/retriveData.js");
 const CalculatedPropertyModel = require("./models/CalculatedPropertiesModel.js");
 const calculatePriceChange = require("./utiles/calculatePriceChange.js");
+const alertRouter = require("./routers/alertRouter.js");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -58,6 +59,7 @@ app.use("/property", propertyRouter);
 app.use("/auth", authRouter);
 app.use("/user", userRouter);
 app.use("/save-search", searchRouter);
+app.use("/alert", alertRouter);
 
 // Email Routes
 app.post("/send-rafer-mail", async (req, res) => {

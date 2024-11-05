@@ -17,18 +17,18 @@ searchRouter.post("/", verifyToken, async (req, res) => {
   const user = await User.findOne({ email });
 
   // ------- Saving the Search----------
-  // const saveSearch = new SaveSearch({
-  //   user_id: user._id,
-  //   type: reqBody.type,
-  //   bedRooms: reqBody.bedRooms,
-  //   min_price: reqBody.min_price,
-  //   max_price: reqBody.max_price,
-  //   location: reqBody.location,
-  //   property_type: reqBody.property_type,
-  // });
-  // await saveSearch.save();
-  // user.saved_searches.push(saveSearch._id);
-  // await user.save();
+  const saveSearch = new SaveSearch({
+    user_id: user._id,
+    type: reqBody.type,
+    bedRooms: reqBody.bedRooms,
+    min_price: reqBody.min_price,
+    max_price: reqBody.max_price,
+    location: reqBody.location,
+    property_type: reqBody.property_type,
+  });
+  await saveSearch.save();
+  user.saved_searches.push(saveSearch._id);
+  await user.save();
 
   // ----------------Saving the Search Results-----------
   // const allSearches = await SaveSearch.find({ user_id: user._id });
@@ -58,7 +58,7 @@ searchRouter.post("/", verifyToken, async (req, res) => {
       });
       await newSavePro.save();
     } else {
-      console.log(property.AGENT_REF);
+      // console.log(property.AGENT_REF);
     }
   }
 

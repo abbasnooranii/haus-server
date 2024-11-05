@@ -8,6 +8,8 @@ const UserSchema = new Schema({
   alerts: String,
   saved_properties: [String],
   saved_searches: [{ type: Schema.Types.ObjectId, ref: "saveSearches" }],
+  alert_type: String,
+  alert_send_date: Date,
   // properties: [{ type: mongoose.Schema.Types.ObjectId, ref: "Property" }],
 });
 
