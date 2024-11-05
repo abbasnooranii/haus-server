@@ -4,6 +4,9 @@ const User = require("../models/UserModel");
 const SaveSearch = require("../models/SaveSearchModel");
 const mongodb = require("mongodb");
 const jwt = require("jsonwebtoken");
+const getFilterObj = require("../utiles/getFilterObj");
+const PropertyModel = require("../models/PropertyModel");
+const UserSavedPropertyModel = require("../models/UserSavedPropertiesModel");
 
 const searchRouter = Router();
 
@@ -28,13 +31,41 @@ searchRouter.post("/", verifyToken, async (req, res) => {
   // await user.save();
 
   // ----------------Saving the Search Results-----------
-  const allSearches = await SaveSearch.find({ user_id: user._id });
+  // const allSearches = await SaveSearch.find({ user_id: user._id });
+  const query = {
+    ...reqBody,
+    agent_ref: reqBody.type === "to_let" ? "r" : "s",
+    badrooms: reqBody.bedRooms.join(","),
+    prop_sub_id: reqBody.property_type,
+    max_price: reqBody.max_price.toString(),
+    min_price: reqBody.min_price.toString(),
+  };
+  const filter = getFilterObj(query);
+
+  const SearchedProperties = await PropertyModel.find(filter);
+
+  for (property of SearchedProperties) {
+    const filter2 = {
+      USER_EMAIL: email,
+      AGENT_REF: property.AGENT_REF,
+    };
+    const savedProperty = await UserSavedPropertyModel.findOne(filter2);
+
+    if (!savedProperty) {
+      const newSavePro = new UserSavedPropertyModel({
+        ...filter2,
+        PRICE: property.PRICE,
+      });
+      await newSavePro.save();
+    } else {
+      console.log(property.AGENT_REF);
+    }
+  }
 
   return res.json({
     message: "Search Saved",
     success: true,
-    // id: saveSearch._id,
-    allSearches,
+    id: saveSearch._id,
   });
 });
 
