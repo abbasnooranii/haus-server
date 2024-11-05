@@ -17,10 +17,26 @@ alertRouter.post("/", verifyToken, async (req, res) => {
     await user.save();
 
     if (alert === "never") {
-      return res.json({ message: "You will never get any alert." });
+      return res.json({
+        message: "You will never get any alert.",
+        success: true,
+      });
     }
 
-    return res.json({ message: `You will get alert ${alert}` });
+    return res.json({ message: `You will get alert ${alert}`, success: true });
+  } catch (error) {
+    return res.status(500).json({ message: "Something went wrong", error });
+  }
+});
+alertRouter.get("/", verifyToken, async (req, res) => {
+  try {
+    const { email } = req.user;
+    if (!email) {
+      return res.status(404).json({ message: "Email or alert type not found" });
+    }
+    const user = await User.findOne({ email });
+
+    return res.json({ message: `Successfull`, alert_type: user.alert_type });
   } catch (error) {
     return res.status(500).json({ message: "Something went wrong", error });
   }
