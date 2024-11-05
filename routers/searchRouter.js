@@ -44,7 +44,7 @@ searchRouter.post("/", verifyToken, async (req, res) => {
 
   const SearchedProperties = await PropertyModel.find(filter);
 
-  for (property of SearchedProperties) {
+  for (let property of SearchedProperties) {
     const filter2 = {
       USER_EMAIL: email,
       AGENT_REF: property.AGENT_REF,

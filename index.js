@@ -17,11 +17,11 @@ const cookieParser = require("cookie-parser");
 const verifyToken = require("./utiles/middleware.js");
 const userRouter = require("./routers/userRouter.js");
 const searchRouter = require("./routers/searchRouter.js");
-const PrevPropertyModel = require("./models/PrevPropertiesModel.js");
 const retriveDataFromFile = require("./utiles/retriveData.js");
-const CalculatedPropertyModel = require("./models/CalculatedPropertiesModel.js");
-const calculatePriceChange = require("./utiles/calculatePriceChange.js");
+
 const alertRouter = require("./routers/alertRouter.js");
+const priceReductionCheck = require("./utiles/priceReductionCheck.js");
+const transporter = require("./utiles/emailTransportar.js");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -36,17 +36,6 @@ app.use(
   })
 );
 app.use(cookieParser());
-
-// Nodemailer transporter
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  host: "smtp.gmail.com",
-  port: 587,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
 
 app.get("/", (req, res) => {
   res.send("Server is running here...");
@@ -116,7 +105,7 @@ app.post("/send-rafer-mail", async (req, res) => {
 
     const info = await transporter.sendMail({
       from: '"Haus" <haus@property.email>', // sender address
-      to: "developershouse@hotmail.com", // list of receivers
+      to: process.env.ADMIN_REVEIVER_EMAIL, // list of receivers
       subject: "Referral Form Submission", // Subject line
       html: htmlToSend, // html body
     });
@@ -151,9 +140,10 @@ app.post("/send-touch-mail", async (req, res) => {
     };
     const htmlToSend = template(replacements);
 
+    // console.log(process.env.ADMIN_REVEIVER_EMAIL);
     const info = await transporter.sendMail({
       from: '"Haus" <haus@property.email>', // sender address
-      to: "developershouse@hotmail.com", // list of receivers
+      to: process.env.ADMIN_REVEIVER_EMAIL, // list of receivers
       subject: "Contact form", // Subject line
       html: htmlToSend, // html body
     });
@@ -189,7 +179,7 @@ app.post("/send-ready-mail", async (req, res) => {
 
     const info = await transporter.sendMail({
       from: '"Haus" <haus@property.email>', // sender address
-      to: "developershouse@hotmail.com", // list of receivers
+      to: process.env.ADMIN_REVEIVER_EMAIL, // list of receivers
       subject: "Contact form", // Subject line
       html: htmlToSend, // html body
     });
@@ -202,22 +192,13 @@ app.post("/send-ready-mail", async (req, res) => {
 });
 
 app.get("/restore-data", async (req, res) => {
-  // --------------Updating the PrevProperty and CurrProperty Databases with the raw data----------
+  // -------------- Saving the new  raw data ----------
   // let rawData = await retriveDataFromFile();
-  // const oldProperties = await PropertyModel.find();
-
-  // // Getting old properties properties to the old table
-  // if (oldProperties.length > 0) {
-  //   await PrevPropertyModel.deleteMany();
-  //   await PrevPropertyModel.insertMany(oldProperties);
-  // }
-
-  // // Saving the brand new data to the NewPropertiModel after deleting it.
   // await PropertyModel.deleteMany();
   // await PropertyModel.insertMany(rawData);
 
-  //---------------Calculating the price up down and saving it to database--------------------
-  await calculatePriceChange();
+  //--------------- Calculating the price up down and saving it to database --------------------
+  await priceReductionCheck();
 
   return res.json({ message: "Data restored" });
 });

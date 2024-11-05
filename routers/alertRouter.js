@@ -28,6 +28,7 @@ alertRouter.post("/", verifyToken, async (req, res) => {
     return res.status(500).json({ message: "Something went wrong", error });
   }
 });
+
 alertRouter.get("/", verifyToken, async (req, res) => {
   try {
     const { email } = req.user;

@@ -1,0 +1,25 @@
+<html>
+  <head>
+    <title>Price Reduction</title>
+    <style>
+      .body {
+        background-color: #fff;
+        color: #000;
+      }
+      .font-bold {
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <h3 style="font-size: 18px; font-weight: bold">
+      There is a price reduction in following properties of your interest.
+    </h3>
+    <ul>
+      {{#each links}}
+      <li><a href="{{url}}">Property {{increment @index}}</a></li>
+      {{/each}}
+    </ul>
+    <span>Thanks.</span>
+  </body>
+</html>
