@@ -40,6 +40,21 @@ const priceReductionCheck = async () => {
           CheckPriceChangeAndSendEmail(user);
         }
       }
+      //Checking Weekly users
+      if (user.alert_type === "weekly" && user.alert_send_date) {
+        const lastEmailDate = new Date(user.alert_send_date);
+        const oneWeekLater = new Date(
+          lastEmailDate.setMonth(lastEmailDate.getDate() + 7)
+        );
+        const currentDate = new Date();
+        // Sending the email if one week has been passed or not
+        if (currentDate >= oneWeekLater) {
+          console.log("Sending the email");
+          CheckPriceChangeAndSendEmail(user);
+        } else {
+          console.log("Not sending the email");
+        }
+      }
     })
   );
 };
