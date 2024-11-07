@@ -34,7 +34,7 @@ authRouter.post("/jwt", async (req, res) => {
   try {
     const user = req.body;
     const token = jwt.sign(user, process.env.JWT_SECRET, {
-      expiresIn: "1h",
+      expiresIn: "30d",
     });
     res.cookie("haus_token", token, cookieOption).send({ succcess: true });
   } catch (error) {
