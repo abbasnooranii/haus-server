@@ -10,14 +10,13 @@ Handlebars.registerHelper("increment", function (index) {
   return index + 1;
 });
 
+// Setting the email template
+const source = fs
+  .readFileSync("email-templates/template4.html", "utf-8")
+  .toString();
+const template = Handlebars.compile(source);
+
 const priceReductionCheck = async () => {
-  // Setting the email template
-
-  const source = fs
-    .readFileSync("email-templates/template4.html", "utf-8")
-    .toString();
-  const template = Handlebars.compile(source);
-
   const users = await User.find();
   if (users.length < 1) {
     return;
@@ -25,50 +24,73 @@ const priceReductionCheck = async () => {
 
   await Promise.all(
     users.map(async (user) => {
-      // Retrieve all saved properties for the user in one query
-      const savedSearchProperties = await UserSavedPropertyModel.find({
-        USER_EMAIL: user.email,
+      // Checking if this is the time to send emails
+      if (!user.alert_type || user.alert_type === "never") return;
+
+      //Checking Monthly users
+      if (user.alert_type === "monthly" && user.alert_send_date) {
+        const lastEmailDate = new Date(user.alert_send_date);
+        const oneMonthLater = new Date(
+          lastEmailDate.setMonth(lastEmailDate.getMonth() + 1)
+        );
+        const currentDate = new Date();
+        // Sending the email if one month has been passed or not
+        if (currentDate >= oneMonthLater) {
+          console.log("Sending the email");
+          CheckPriceChangeAndSendEmail(user);
+        }
+      }
+    })
+  );
+};
+
+const CheckPriceChangeAndSendEmail = async (user) => {
+  // Retrieve all saved properties for the user in one query
+  const savedSearchProperties = await UserSavedPropertyModel.find({
+    USER_EMAIL: user.email,
+  });
+
+  if (savedSearchProperties.length === 0) return;
+
+  const priceReducedPropertiesLinks = [];
+
+  // Process each saved property for price comparison
+  await Promise.all(
+    savedSearchProperties.map(async (property) => {
+      const rawProperty = await PropertyModel.findOne({
+        AGENT_REF: property.AGENT_REF,
       });
 
-      if (savedSearchProperties.length === 0) return;
+      if (!rawProperty) return; // Skip if property not found
 
-      const priceReducedPropertiesLinks = [];
+      const oldPrice = parseInt(property.PRICE);
+      const newPrice = parseInt(rawProperty.PRICE);
 
-      // Process each saved property for price comparison
-      await Promise.all(
-        savedSearchProperties.map(async (property) => {
-          const rawProperty = await PropertyModel.findOne({
-            AGENT_REF: property.AGENT_REF,
-          });
-
-          if (!rawProperty) return; // Skip if property not found
-
-          const oldPrice = parseInt(property.PRICE);
-          const newPrice = parseInt(rawProperty.PRICE);
-
-          // Add to links if the price has dropped
-          if (newPrice < oldPrice) {
-            priceReducedPropertiesLinks.push({
-              url: `${process.env.CLIENT_URL}/hauses/${rawProperty._id}`,
-            });
-          }
-        })
-      );
-
-      // Only send email if there are price-reduced properties
-      if (priceReducedPropertiesLinks.length > 0) {
-        const replacements = { links: priceReducedPropertiesLinks };
-        const htmlToSend = template(replacements);
-
-        await transporter.sendMail({
-          from: '"Haus" <haus@property.email>',
-          to: "mdmahidunnobi@gmail.com", // use user's email directly
-          subject: "Price Drop!",
-          html: htmlToSend,
+      // Add to links if the price has dropped
+      if (newPrice < oldPrice) {
+        priceReducedPropertiesLinks.push({
+          url: `${process.env.CLIENT_URL}/hauses/${rawProperty._id}`,
         });
       }
     })
   );
+
+  // Saving the date time to alert_send_date
+  user.alert_send_date = Date.now();
+  await user.save();
+
+  // Only send email if there are price-reduced properties
+  if (priceReducedPropertiesLinks.length > 0) {
+    const replacements = { links: priceReducedPropertiesLinks };
+    const htmlToSend = template(replacements);
+
+    await transporter.sendMail({
+      from: '"Haus" <haus@property.email>',
+      to: "mdmahidunnobi@gmail.com", // use user's email directly
+      subject: "Price Drop!",
+      html: htmlToSend,
+    });
+  }
 };
 
 module.exports = priceReductionCheck;
