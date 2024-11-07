@@ -38,6 +38,7 @@ const priceReductionCheck = async () => {
         if (currentDate >= oneMonthLater) {
           console.log("Sending the email");
           CheckPriceChangeAndSendEmail(user);
+          return;
         }
       }
       //Checking Weekly users
@@ -51,10 +52,11 @@ const priceReductionCheck = async () => {
         if (currentDate >= oneWeekLater) {
           console.log("Sending the email");
           CheckPriceChangeAndSendEmail(user);
-        } else {
-          console.log("Not sending the email");
+          return;
         }
       }
+      // Sending email for Immediately and those users  who does not have any alert_send_date but do have alert_type
+      CheckPriceChangeAndSendEmail(user);
     })
   );
 };
@@ -98,13 +100,13 @@ const CheckPriceChangeAndSendEmail = async (user) => {
   if (priceReducedPropertiesLinks.length > 0) {
     const replacements = { links: priceReducedPropertiesLinks };
     const htmlToSend = template(replacements);
-
-    await transporter.sendMail({
-      from: '"Haus" <haus@property.email>',
-      to: "mdmahidunnobi@gmail.com", // use user's email directly
-      subject: "Price Drop!",
-      html: htmlToSend,
-    });
+    console.log("Mahidun..Email is being send");
+    // await transporter.sendMail({
+    //   from: '"Haus" <haus@property.email>',
+    //   to: "mdmahidunnobi@gmail.com", // use user's email directly
+    //   subject: "Price Drop!",
+    //   html: htmlToSend,
+    // });
   }
 };
 

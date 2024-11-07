@@ -36,6 +36,10 @@ alertRouter.get("/", verifyToken, async (req, res) => {
       return res.status(404).json({ message: "Email or alert type not found" });
     }
     const user = await User.findOne({ email });
+    if (!user.alert_type) {
+      user.alert_type = "immediately";
+      await user.save();
+    }
 
     return res.json({ message: `Successfull`, alert_type: user.alert_type });
   } catch (error) {
