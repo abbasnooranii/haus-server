@@ -25,6 +25,7 @@ const transporter = require("./utiles/emailTransportar.js");
 
 const User = require("./models/UserModel");
 const UserSavedPropertyModel = require("./models/UserSavedPropertiesModel");
+const connect = require("./utiles/dbConnect.js");
 
 // ---- Registering a helper function to increament the index of each link----
 Handlebars.registerHelper("increment", function (index) {
@@ -267,17 +268,6 @@ cron.schedule("55 23 * * *", async () => {
   await priceReductionCheck();
   console.log("Data restored and Emails were sent...!");
 });
-
-const connect = async () => {
-  try {
-    await mongoose.connect(
-      `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@cluster0.cxk7yn6.mongodb.net/haus?retryWrites=true&w=majority&appName=Cluster0`
-    );
-    console.log("Connected with the database successfully");
-  } catch (error) {
-    console.log(error);
-  }
-};
 
 const CheckPriceChangeAndSendEmail = async (user) => {
   // Setting the email template

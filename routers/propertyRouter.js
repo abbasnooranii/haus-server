@@ -4,6 +4,7 @@ const { Router } = require("express");
 const PropertyModel = require("../models/PropertyModel.js");
 const { ObjectId } = require("mongodb");
 const getFilterObj = require("../utiles/getFilterObj.js");
+const connect = require("../utiles/dbConnect.js");
 
 const propertyRouter = Router();
 
@@ -22,6 +23,7 @@ propertyRouter.get("/", async (req, res) => {
     if (query.selectedPage) {
       skipCount = (query.selectedPage - 1) * itemsPerPage;
     }
+    await connect();
     const properties = await PropertyModel.find(filter)
       .skip(skipCount)
       .limit(itemsPerPage);
