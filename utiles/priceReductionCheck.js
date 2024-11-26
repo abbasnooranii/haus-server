@@ -15,6 +15,11 @@ const priceReductionCheck = async () => {
   if (users.length < 1) {
     return;
   }
+  // Setting the email template
+  const source = fs
+    .readFileSync("../email-templates/template4.html", "utf-8")
+    .toString();
+  const template = Handlebars.compile(source);
 
   await Promise.all(
     users.map(async (user) => {
@@ -56,11 +61,6 @@ const priceReductionCheck = async () => {
 };
 
 const CheckPriceChangeAndSendEmail = async (user) => {
-  // Setting the email template
-  const source = fs
-    .readFileSync("./email-templates/template4.html", "utf-8")
-    .toString();
-  const template = Handlebars.compile(source);
   // Retrieve all saved properties for the user in one query
   const savedSearchProperties = await UserSavedPropertyModel.find({
     USER_EMAIL: user.email,
