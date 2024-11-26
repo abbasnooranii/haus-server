@@ -76,6 +76,7 @@ propertyRouter.get("/page-count", async (req, res) => {
     if (query.selectedPage) {
       skipCount = (query.selectedPage - 1) * itemsPerPage;
     }
+    await connect();
     const properties = await PropertyModel.find(filter).countDocuments();
     // const properties = await PropertyModel.countDocuments();
     res.send({ count: Math.ceil(properties / 10) });
@@ -88,6 +89,7 @@ propertyRouter.get("/page-count", async (req, res) => {
 propertyRouter.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;
+    await connect();
     const properties = await PropertyModel.findById(new ObjectId(id));
     return res.send(properties);
   } catch (error) {
