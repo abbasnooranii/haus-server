@@ -39,7 +39,7 @@ const blmPath = "./up/115_111_01.BLM";
 const corsConfig = {
   origin: ["*", "http://localhost:5173", "https://haus-client.vercel.app"],
   credentials: true,
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
 };
 
 // Middlewares
