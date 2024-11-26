@@ -9,11 +9,6 @@ const fs = require("fs");
 Handlebars.registerHelper("increment", function (index) {
   return index + 1;
 });
-// Setting the email template
-const source = fs
-  .readFileSync("email-templates/template4.html", "utf-8")
-  .toString();
-const template = Handlebars.compile(source);
 
 const priceReductionCheck = async () => {
   const users = await User.find();
@@ -61,6 +56,11 @@ const priceReductionCheck = async () => {
 };
 
 const CheckPriceChangeAndSendEmail = async (user) => {
+  // Setting the email template
+  const source = fs
+    .readFileSync("email-templates/template4.html", "utf-8")
+    .toString();
+  const template = Handlebars.compile(source);
   // Retrieve all saved properties for the user in one query
   const savedSearchProperties = await UserSavedPropertyModel.find({
     USER_EMAIL: user.email,
