@@ -29,7 +29,13 @@ const blmPath = "./up/115_111_01.BLM";
 
 // Middlewares
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: ["*"],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+  })
+);
 app.use(cookieParser());
 
 app.get("/", (req, res) => {
