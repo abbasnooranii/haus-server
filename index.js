@@ -28,7 +28,7 @@ const port = process.env.PORT || 5000;
 const blmPath = "./up/115_111_01.BLM";
 
 const corsConfig = {
-  origin: ["*"],
+  origin: ["*", "http://localhost:5173"],
   credentials: true,
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
 };
