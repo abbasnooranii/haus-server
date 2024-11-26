@@ -142,7 +142,7 @@ app.post("/send-touch-mail", async (req, res) => {
 
     // console.log(process.env.ADMIN_REVEIVER_EMAIL);
     const info = await transporter.sendMail({
-      from: '"Haus" <haus@property.email>', // sender address
+      from: "haus@property.email", // sender address
       to: process.env.ADMIN_REVEIVER_EMAIL, // list of receivers
       subject: "Contact form", // Subject line
       html: htmlToSend, // html body
