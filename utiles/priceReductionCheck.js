@@ -12,7 +12,7 @@ Handlebars.registerHelper("increment", function (index) {
 
 // Setting the email template
 const source = fs
-  .readFileSync("email-templates/template4.html", "utf-8")
+  .readFileSync("../email-templates/template4.html", "utf-8")
   .toString();
 const template = Handlebars.compile(source);
 
