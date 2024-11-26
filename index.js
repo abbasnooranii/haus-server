@@ -27,15 +27,16 @@ const app = express();
 const port = process.env.PORT || 5000;
 const blmPath = "./up/115_111_01.BLM";
 
+const corsConfig = {
+  origin: ["*"],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+};
+
 // Middlewares
 app.use(express.json());
-app.use(
-  cors({
-    origin: ["*"],
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
-  })
-);
+app.use(cors(corsConfig));
+app.options("", cors(corsConfig));
 app.use(cookieParser());
 
 app.get("/", (req, res) => {
