@@ -228,6 +228,6 @@ const connect = async () => {
 };
 
 app.listen(port, () => {
-  // connect();
+  connect();
   console.log("Server started successfully");
 });
