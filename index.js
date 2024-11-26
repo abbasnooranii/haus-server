@@ -333,7 +333,7 @@ const CheckPriceChangeAndSendEmail = async (user) => {
   }
 };
 
-app.listen(port, () => {
-  connect();
+app.listen(port, async () => {
+  await connect();
   console.log("Server started successfully");
 });
