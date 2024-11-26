@@ -29,12 +29,7 @@ const blmPath = "./up/115_111_01.BLM";
 
 // Middlewares
 app.use(express.json());
-app.use(
-  cors({
-    origin: ["http://localhost:5173", "https://haus-01.netlify.app"],
-    credentials: true,
-  })
-);
+app.use(cors());
 app.use(cookieParser());
 
 app.get("/", (req, res) => {
