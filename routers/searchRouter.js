@@ -124,9 +124,9 @@ searchRouter.post("/check", async (req, res) => {
     }
     tokenUser = decoded;
   });
-  await connect();
 
   const { email } = tokenUser;
+  await connect();
   const user = await User.findOne({ email });
 
   //   Creating the  Save Search document

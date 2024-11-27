@@ -15,11 +15,11 @@ const cookieOption = {
 authRouter.post("/signup", async (req, res) => {
   try {
     const reqBody = req.body;
+    await connect();
     const exists = await User.findOne({ email: reqBody.email });
     if (exists) {
       return res.status(403).json({ message: "User Already exists" });
     }
-    await connect();
 
     const user = new User({
       ...reqBody,
