@@ -2,6 +2,7 @@ const { Router } = require("express");
 const User = require("../models/UserModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const connect = require("../utiles/dbConnect");
 
 const authRouter = Router();
 
@@ -18,6 +19,7 @@ authRouter.post("/signup", async (req, res) => {
     if (exists) {
       return res.status(403).json({ message: "User Already exists" });
     }
+    await connect();
 
     const user = new User({
       ...reqBody,

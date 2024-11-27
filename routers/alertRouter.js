@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const verifyToken = require("../utiles/middleware");
 const User = require("../models/UserModel");
+const connect = require("../utiles/dbConnect");
 
 const alertRouter = Router();
 
@@ -11,6 +12,7 @@ alertRouter.post("/", verifyToken, async (req, res) => {
     if (!email || !alert) {
       return res.status(404).json({ message: "Email or alert type not found" });
     }
+    await connect();
     const user = await User.findOne({ email });
     user.alert_type = alert;
 
@@ -35,6 +37,7 @@ alertRouter.get("/", verifyToken, async (req, res) => {
     if (!email) {
       return res.status(404).json({ message: "Email or alert type not found" });
     }
+    await connect();
     const user = await User.findOne({ email });
     if (!user.alert_type) {
       user.alert_type = "immediately";

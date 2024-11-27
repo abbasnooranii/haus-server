@@ -2,12 +2,14 @@ const { Router } = require("express");
 const verifyToken = require("../utiles/middleware");
 const User = require("../models/UserModel");
 const PropertyModel = require("../models/PropertyModel");
+const connect = require("../utiles/dbConnect");
 
 const userRouter = Router();
 
 userRouter.get("/", verifyToken, async (req, res) => {
   try {
     const { email } = req.user;
+    await connect();
     const user = await User.findOne({ email });
     return res.send({ message: "User found", success: true, user });
   } catch (error) {
@@ -19,6 +21,7 @@ userRouter.get("/", verifyToken, async (req, res) => {
 userRouter.get("/saved-properties", verifyToken, async (req, res) => {
   try {
     const { email } = req.user;
+    await connect();
     const user = await User.findOne({ email });
 
     const properties = await Promise.all(
@@ -38,6 +41,7 @@ userRouter.post("/save-property", verifyToken, async (req, res) => {
   try {
     const { AGENT_REF } = req.body;
     const { email } = req.user;
+    await connect();
     const user = await User.findOne({ email });
     const propertyExists = user.saved_properties.includes(AGENT_REF);
     if (!propertyExists) {
@@ -58,6 +62,7 @@ userRouter.post("/unsave-property", verifyToken, async (req, res) => {
   try {
     const { AGENT_REF } = req.body;
     const { email } = req.user;
+    await connect();
     const user = await User.findOne({ email });
     const propertyExists = user.saved_properties.includes(AGENT_REF);
     if (propertyExists) {

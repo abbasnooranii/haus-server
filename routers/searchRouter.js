@@ -7,6 +7,7 @@ const jwt = require("jsonwebtoken");
 const getFilterObj = require("../utiles/getFilterObj");
 const PropertyModel = require("../models/PropertyModel");
 const UserSavedPropertyModel = require("../models/UserSavedPropertiesModel");
+const connect = require("../utiles/dbConnect");
 
 const searchRouter = Router();
 
@@ -14,6 +15,7 @@ searchRouter.post("/", verifyToken, async (req, res) => {
   const reqBody = req.body;
   //   Fetching the user
   const { email } = req.user;
+  await connect();
   const user = await User.findOne({ email });
 
   // ------- Saving the Search----------
@@ -71,6 +73,7 @@ searchRouter.post("/", verifyToken, async (req, res) => {
 
 searchRouter.get("/", verifyToken, async (req, res) => {
   const { email } = req.user;
+  await connect();
   const user = await User.findOne({ email });
   const savedSearches = await SaveSearch.find({ user_id: user._id });
   return res.json(savedSearches);
@@ -78,8 +81,8 @@ searchRouter.get("/", verifyToken, async (req, res) => {
 
 searchRouter.delete("/:id", verifyToken, async (req, res) => {
   const { id } = req.params;
-
   const { email } = req.user;
+  await connect();
   const user = await User.findOne({ email });
 
   const saveSearch = await SaveSearch.findOne({
@@ -121,6 +124,7 @@ searchRouter.post("/check", async (req, res) => {
     }
     tokenUser = decoded;
   });
+  await connect();
 
   const { email } = tokenUser;
   const user = await User.findOne({ email });
