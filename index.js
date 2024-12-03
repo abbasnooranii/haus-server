@@ -204,14 +204,14 @@ app.post("/send-ready-mail", async (req, res) => {
 
 app.get("/restore-data", async (req, res) => {
   // -------------- Saving the new  raw data ----------
-  // let rawData = await retriveDataFromFile();
-  // await PropertyModel.deleteMany();
-  // await PropertyModel.insertMany(rawData);
+  let rawData = await retriveDataFromFile();
+  await PropertyModel.deleteMany();
+  await PropertyModel.insertMany(rawData);
   // TODO: Uncoment  this taks
 
   //--------------- Calculating the price up down and saving it to database --------------------
-  // await priceReductionCheck();
-  // console.log("Data restored and Emails were sent...!");
+  await priceReductionCheck();
+  console.log("Data restored and Emails were sent...!");
   const users = await User.find();
   if (users.length < 1) {
     return;
