@@ -314,7 +314,7 @@ cron.schedule("*/2 * * * *", async () => {
 
 
 app.get("/download-ftp", async (req, res) => {  
-  // -------------- Saving the new  raw data ----------
+  // -------------- Saving the new  raw data ---------- 
   await connect();
   await downloadFilesFromFTP();
   console.log("FTP download completed.");
