@@ -205,6 +205,7 @@ app.post("/send-ready-mail", async (req, res) => {
 
 app.get("/restore-data", async (req, res) => {
   // -------------- Saving the new  raw data ----------
+  await connect();
   await downloadFilesFromFTP();
   console.log("FTP download completed.");
   let rawData = await retriveDataFromFile();
