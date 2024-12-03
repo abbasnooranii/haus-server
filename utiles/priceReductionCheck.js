@@ -4,7 +4,7 @@ const UserSavedPropertyModel = require("../models/UserSavedPropertiesModel");
 const Handlebars = require("handlebars");
 const transporter = require("./emailTransportar.js");
 const fs = require("fs");
-
+const path = require('path');
 // ---- Registering a helper function to increament the index of each link----
 Handlebars.registerHelper("increment", function (index) {
   return index + 1;
@@ -18,7 +18,7 @@ const priceReductionCheck = async () => {
   console.log(__dirname);
   // Setting the email template
   const source = fs
-    .readFileSync("../email-templates/template4.html", "utf-8")
+    .readFileSync(path.resolve(__dirname, "../email-templates/template4.html"), "utf-8")
     .toString();
   const template = Handlebars.compile(source);
 
