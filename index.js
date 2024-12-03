@@ -313,6 +313,21 @@ cron.schedule("*/2 * * * *", async () => {
 });
 
 
+app.get("/download-ftp", async (req, res) => {  
+  // -------------- Saving the new  raw data ----------
+  await connect();
+  await downloadFilesFromFTP();
+  console.log("FTP download completed.");
+  let rawData = await retriveDataFromFile();
+  await PropertyModel.deleteMany();
+  await PropertyModel.insertMany(rawData);
+
+  //--------------- Calculating the price up down and saving it to database --------------------
+  await priceReductionCheck();
+  console.log("Data restored and Emails were sent...!");
+  return res.json({ message: "Data restored" });
+});
+
 
 const CheckPriceChangeAndSendEmail = async (user) => {
   // Setting the email template
