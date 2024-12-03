@@ -208,6 +208,7 @@ app.get("/restore-data", async (req, res) => {
   await downloadFilesFromFTP();
   console.log("FTP download completed.");
   let rawData = await retriveDataFromFile();
+  console.log("Raw Data...!");
   await PropertyModel.deleteMany();
   await PropertyModel.insertMany(rawData);
   // TODO: Uncoment  this taks
