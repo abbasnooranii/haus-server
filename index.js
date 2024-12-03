@@ -268,7 +268,7 @@ async function downloadFilesFromFTP() {
     password: "6Ws0BVCHlO5F",
     secure: false,
   };
-  const localDirectory = "./up/";
+  const localDirectory = "/tmp/";
   const client = new ftp.Client();
 
   try {
