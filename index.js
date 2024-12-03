@@ -207,7 +207,7 @@ app.get("/restore-data", async (req, res) => {
   // -------------- Saving the new  raw data ----------
   await connect();
   await downloadFilesFromFTP();
-  console.log(__dirname);
+  
   console.log("FTP download completed.");
   let rawData = await retriveDataFromFile();
   console.log("Raw Data...!");
@@ -216,8 +216,8 @@ app.get("/restore-data", async (req, res) => {
   // TODO: Uncoment  this taks
   console.log("Data restored...!");
   //--------------- Calculating the price up down and saving it to database --------------------
-  // await priceReductionCheck();
-  // console.log("Data restored and Emails were sent...!");
+  await priceReductionCheck();
+  console.log("Data restored and Emails were sent...!");
   const users = await User.find();
   if (users.length < 1) {
     return;
