@@ -211,7 +211,7 @@ app.get("/restore-data", async (req, res) => {
   await PropertyModel.deleteMany();
   await PropertyModel.insertMany(rawData);
   // TODO: Uncoment  this taks
-
+  console.log("Data restored...!");
   //--------------- Calculating the price up down and saving it to database --------------------
   await priceReductionCheck();
   console.log("Data restored and Emails were sent...!");
