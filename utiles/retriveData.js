@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const blmPath = "./up/115_111_01.BLM";
+const blmPath = "/tmp/151_151_01.BLM";
 
 const retriveDataFromFile = async () => {
   try {
