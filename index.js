@@ -6,6 +6,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 const mongoose = require("mongoose");
 const fs = require("fs");
+const ftp = require("basic-ftp"); // Add the FTP library
 const PropertyModel = require("./models/PropertyModel.js");
 const propertyRouter = require("./routers/propertyRouter.js");
 const path = require("path");
@@ -204,13 +205,16 @@ app.post("/send-ready-mail", async (req, res) => {
 
 app.get("/restore-data", async (req, res) => {
   // -------------- Saving the new  raw data ----------
-  // let rawData = await retriveDataFromFile();
-  // await PropertyModel.deleteMany();
-  // await PropertyModel.insertMany(rawData);
+  await downloadFilesFromFTP();
+  console.log("FTP download completed.");
+  let rawData = await retriveDataFromFile();
+  await PropertyModel.deleteMany();
+  await PropertyModel.insertMany(rawData);
   // TODO: Uncoment  this taks
 
   //--------------- Calculating the price up down and saving it to database --------------------
-  // await priceReductionCheck();
+  await priceReductionCheck();
+  console.log("Data restored and Emails were sent...!");
   const users = await User.find();
   if (users.length < 1) {
     return;
@@ -257,9 +261,46 @@ app.get("/restore-data", async (req, res) => {
   return res.json({ message: "Data restored" });
 });
 
+async function downloadFilesFromFTP() {
+  const ftpOptions = {
+    host: "ftp.haus-properties.com",
+    user: "dh@files.haus-properties.com",
+    password: "6Ws0BVCHlO5F",
+    secure: false,
+  };
+  const localDirectory = "./up/";
+  const client = new ftp.Client();
+
+  try {
+    await client.access(ftpOptions);
+    // await client.cd("/upload");
+    
+    const files = await client.list();
+    // console.log(files);
+    for (const file of files) {
+      if (file.isFile) {
+        if (file.name.toLowerCase() === "151_151_01.blm") {
+          const remotePath = file.name;
+          const localPath = path.join(localDirectory, remotePath);
+
+          await client.downloadTo(localPath, remotePath);
+          console.log(localPath);
+          console.log(`Downloaded: ${remotePath} to ${localPath}`);
+        }
+      }
+    }
+  } catch (error) {
+    console.error("FTP download error:", error);
+  } finally {
+    client.close();
+  }
+}
+
 // Automatically data will be restored in 12:00 AM everyday
 cron.schedule("55 23 * * *", async () => {
   // -------------- Saving the new  raw data ----------
+  await downloadFilesFromFTP();
+  console.log("FTP download completed.");
   let rawData = await retriveDataFromFile();
   await PropertyModel.deleteMany();
   await PropertyModel.insertMany(rawData);
