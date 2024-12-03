@@ -27,7 +27,7 @@ const transporter = require("./utiles/emailTransportar.js");
 const User = require("./models/UserModel");
 const UserSavedPropertyModel = require("./models/UserSavedPropertiesModel");
 const connect = require("./utiles/dbConnect.js");
-export const maxDuration = 60;
+
 // ---- Registering a helper function to increament the index of each link----
 Handlebars.registerHelper("increment", function (index) {
   return index + 1;
