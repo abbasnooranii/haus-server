@@ -15,7 +15,6 @@ const priceReductionCheck = async () => {
   if (users.length < 1) {
     return;
   }
-  console.log(__dirname);
   // Setting the email template
   const source = fs
     .readFileSync(path.resolve(__dirname, "../email-templates/template4.html"), "utf-8")

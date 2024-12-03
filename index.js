@@ -205,19 +205,16 @@ app.post("/send-ready-mail", async (req, res) => {
 
 app.get("/restore-data", async (req, res) => {
   // -------------- Saving the new  raw data ----------
-  await connect();
-  await downloadFilesFromFTP();
-  
-  console.log("FTP download completed.");
-  let rawData = await retriveDataFromFile();
-  console.log("Raw Data...!");
-  await PropertyModel.deleteMany();
-  await PropertyModel.insertMany(rawData);
+  // await connect();
+  // await downloadFilesFromFTP();
+
+  // let rawData = await retriveDataFromFile();
+  // await PropertyModel.deleteMany();
+  // await PropertyModel.insertMany(rawData);
   // TODO: Uncoment  this taks
-  console.log("Data restored...!");
   //--------------- Calculating the price up down and saving it to database --------------------
-  await priceReductionCheck();
-  console.log("Data restored and Emails were sent...!");
+  // await priceReductionCheck();
+  // console.log("Data restored and Emails were sent...!");
   const users = await User.find();
   if (users.length < 1) {
     return;
@@ -302,6 +299,9 @@ async function downloadFilesFromFTP() {
 // Automatically data will be restored in 12:00 AM everyday
 cron.schedule("55 23 * * *", async () => {
   // -------------- Saving the new  raw data ----------
+  await connect();
+  await downloadFilesFromFTP();
+  console.log("FTP download completed.");
   let rawData = await retriveDataFromFile();
   await PropertyModel.deleteMany();
   await PropertyModel.insertMany(rawData);
