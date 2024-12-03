@@ -16,7 +16,7 @@
   "crons": [
       {
         "path": "/download-ftp",
-        "schedule": "*/2 * * * *"
+        "schedule": "*/10 * * * *"
       }
     ]
 }
