@@ -39,43 +39,44 @@ propertyRouter.get("/page-count", async (req, res) => {
   try {
     const query = req.query;
 
+    const filter = getFilterObj(query);
     // Controlling filter
-    const filter = {};
-    if (query.agent_ref) {
-      filter.AGENT_REF = new RegExp(query.agent_ref, "i");
-    }
-    if (query.badrooms && query.badrooms !== "0") {
-      const bedroomsArray = query.badrooms.split(",").map(Number); // Convert the "4,5,7,8" string into an array of numbers
-      filter.BEDROOMS = { $in: bedroomsArray };
-    }
-    if (query.max_price || query.min_price) {
-      filter.$expr = {
-        $and: [
-          { $gte: [{ $toDouble: "$PRICE" }, Number(query.min_price)] },
-          {
-            $lte: [
-              { $toDouble: "$PRICE" },
-              query.max_price === "0" ? 2000 : Number(query.max_price),
-            ],
-          },
-        ],
-      };
-    }
-    if (query.prop_sub_id && query.prop_sub_id !== "") {
-      filter.PROP_SUB_ID = query.prop_sub_id;
-    }
-    if (query.location && query.location !== "") {
-      filter.$or = [
-        { ADDRESS_2: new RegExp(query.location, "i") },
-        { ADDRESS_3: new RegExp(query.location, "i") },
-      ];
-    }
+    // const filter = {};
+    // if (query.agent_ref) {
+    //   filter.AGENT_REF = new RegExp(query.agent_ref, "i");
+    // }
+    // if (query.badrooms && query.badrooms !== "0") {
+    //   const bedroomsArray = query.badrooms.split(",").map(Number); // Convert the "4,5,7,8" string into an array of numbers
+    //   filter.BEDROOMS = { $in: bedroomsArray };
+    // }
+    // if (query.max_price || query.min_price) {
+    //   filter.$expr = {
+    //     $and: [
+    //       { $gte: [{ $toDouble: "$PRICE" }, Number(query.min_price)] },
+    //       {
+    //         $lte: [
+    //           { $toDouble: "$PRICE" },
+    //           query.max_price === "0" ? 2000 : Number(query.max_price),
+    //         ],
+    //       },
+    //     ],
+    //   };
+    // }
+    // if (query.prop_sub_id && query.prop_sub_id !== "") {
+    //   filter.PROP_SUB_ID = query.prop_sub_id;
+    // }
+    // if (query.location && query.location !== "") {
+    //   filter.$or = [
+    //     { ADDRESS_2: new RegExp(query.location, "i") },
+    //     { ADDRESS_3: new RegExp(query.location, "i") },
+    //   ];
+    // }
     // Controlling pagination
-    const itemsPerPage = 10;
-    let skipCount = 0;
-    if (query.selectedPage) {
-      skipCount = (query.selectedPage - 1) * itemsPerPage;
-    }
+    // const itemsPerPage = 10;
+    // let skipCount = 0;
+    // if (query.selectedPage) {
+    //   skipCount = (query.selectedPage - 1) * itemsPerPage;
+    // }
     await connect();
     const properties = await PropertyModel.find(filter).countDocuments();
     // const properties = await PropertyModel.countDocuments();
