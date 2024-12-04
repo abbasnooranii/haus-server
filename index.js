@@ -298,7 +298,7 @@ async function downloadFilesFromFTP() {
 
 // Automatically data will be restored in 12:00 AM everyday
 // cron.schedule("*/2 * * * *", async () => {
-cron.schedule("*/10 * * * *", async () => {
+cron.schedule("59 15 * * *", async () => {
   // -------------- Saving the new  raw data ----------
   await connect();
   await downloadFilesFromFTP();
