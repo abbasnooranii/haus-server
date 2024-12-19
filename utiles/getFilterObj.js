@@ -1,5 +1,8 @@
 const getFilterObj = (query) => {
+  console.log(query)
   const filter = {};
+  if(query.showLetAgreed != 'true')
+    filter.STATUS_ID = { $nin: [5] }; // default filter
   if (query.agent_ref) {
     filter.AGENT_REF = new RegExp(query.agent_ref, "i");
   }

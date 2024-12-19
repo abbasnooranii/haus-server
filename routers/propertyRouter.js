@@ -80,7 +80,7 @@ propertyRouter.get("/page-count", async (req, res) => {
     await connect();
     const properties = await PropertyModel.find(filter).countDocuments();
     // const properties = await PropertyModel.countDocuments();
-    res.send({ count: Math.ceil(properties / 10) });
+    res.send({ count: Math.ceil(properties / 10), totalProp: properties });
   } catch (error) {
     console.log(error);
     res.status(403).send({ message: "Something went wrong" });
