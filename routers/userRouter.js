@@ -31,7 +31,10 @@ userRouter.get("/saved-properties", verifyToken, async (req, res) => {
       })
     );
 
-    return res.send(properties);
+    // Remove null values before sending the response
+    const filteredProperties = properties.filter(property => property !== null);
+
+    return res.send(filteredProperties);
   } catch (error) {
     console.log(error);
     return res.status(403).send({ message: "Something went wrong" });
@@ -68,8 +71,8 @@ userRouter.post("/unsave-property", verifyToken, async (req, res) => {
     if (propertyExists) {
       user.saved_properties
         ? (user.saved_properties = user.saved_properties.filter(
-            (pro) => pro !== AGENT_REF
-          ))
+          (pro) => pro !== AGENT_REF
+        ))
         : (user.saved_properties = []);
 
       await user.save();

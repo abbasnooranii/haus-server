@@ -87,6 +87,31 @@ propertyRouter.get("/page-count", async (req, res) => {
   }
 });
 
+propertyRouter.get("/featured", async (req, res) => {
+  try {
+    const query = {
+      showLetAgreed: "false",
+      agent_ref: "r",
+      badrooms: "",
+      min_price: "",
+      max_price: "",
+      prop_sub_id: "",
+      location: "",
+      PROPERTY_WEEK: 1,
+      LET_TYPE_ID: 0
+    };
+
+    const filter = getFilterObj(query);
+
+    await connect();
+    const properties = await PropertyModel.find(filter).limit(3);
+    return res.send(properties);
+  } catch (error) {
+    console.log(error);
+    res.status(403).send({ message: "Something went wrong" });
+  }
+});
+
 propertyRouter.get("/:id", async (req, res) => {
   try {
     const { id } = req.params;

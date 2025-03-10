@@ -1,5 +1,5 @@
 const getFilterObj = (query) => {
-  console.log(query)
+  // console.log(query)
   const filter = {};
   if(query.showLetAgreed != 'true')
     filter.STATUS_ID = { $nin: [5] }; // default filter
@@ -32,6 +32,15 @@ const getFilterObj = (query) => {
       { ADDRESS_3: new RegExp(query.location, "i") },
     ];
   }
+
+  if (query.PROPERTY_WEEK && query.PROPERTY_WEEK === 1) {
+    filter.PROPERTY_WEEK = query.PROPERTY_WEEK;
+  }
+
+  if (query.LET_TYPE_ID && query.LET_TYPE_ID === 0) {
+    filter.LET_TYPE_ID = { $ne: 1 }; // Exclude LET_TYPE_ID = 1
+  }
+
   return filter;
 };
 

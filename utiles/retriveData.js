@@ -1,7 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 
-const blmPath = "/tmp/151_151_01.BLM"; 
+const blmPath = "/tmp/151_151_01.BLM";
+// const blmPath = "C:/xampp/htdocs/haus-student/tmp/151_151_01.BLM"; 
 
 const retriveDataFromFile = async () => {
   try {
