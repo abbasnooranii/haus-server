@@ -14,8 +14,8 @@ const getFilterObj = (query) => {
     */
   if (query.badrooms) {
     const bedroomsArray = query.badrooms.split(",").map(Number);
-    if (bedroomsArray.includes(11)) {
-      const filteredArray = bedroomsArray.filter(num => num !== 11);
+    if (bedroomsArray.includes(10)) {
+      const filteredArray = bedroomsArray.filter(num => num !== 10);
       
       if (filteredArray.length > 0) {
         filter.$or = [
@@ -23,14 +23,14 @@ const getFilterObj = (query) => {
           { 
             $and: [
               { BEDROOMS: { $regex: "^\\d+$" } },  
-              { $expr: { $gte: [{ $toInt: "$BEDROOMS" }, 11] } }
+              { $expr: { $gte: [{ $toInt: "$BEDROOMS" }, 10] } }
             ]
           }
         ];
       } else {
         filter.$and = [
           { BEDROOMS: { $regex: "^\\d+$" } }, 
-          { $expr: { $gte: [{ $toInt: "$BEDROOMS" }, 11] } }
+          { $expr: { $gte: [{ $toInt: "$BEDROOMS" }, 10] } }
         ];
       }
     } else {
