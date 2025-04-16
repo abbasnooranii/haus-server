@@ -1,5 +1,5 @@
 const getFilterObj = (query) => {
-  console.log(query)
+  //console.log(query)
   const filter = {};
   if(query.showLetAgreed != 'true')
     filter.STATUS_ID = { $nin: [5] }; // default filter
