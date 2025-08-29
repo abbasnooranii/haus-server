@@ -19,7 +19,7 @@ const verifyToken = require("./utiles/middleware.js");
 const userRouter = require("./routers/userRouter.js");
 const searchRouter = require("./routers/searchRouter.js");
 const retriveDataFromFile = require("./utiles/retriveData.js");
-
+const generatePropertySlug = require("./utiles/generateSlug.js");
 const alertRouter = require("./routers/alertRouter.js");
 const priceReductionCheck = require("./utiles/priceReductionCheck.js");
 const transporter = require("./utiles/emailTransportar.js");
@@ -304,6 +304,12 @@ cron.schedule("59 15 * * *", async () => {
   await downloadFilesFromFTP();
   console.log("FTP download completed.");
   let rawData = await retriveDataFromFile();
+  const propertiesWithSlugs = rawData.map((property) => {
+    return {
+      ...property,
+      slug: generatePropertySlug(property),
+    };
+  });
   await PropertyModel.deleteMany();
   await PropertyModel.insertMany(rawData);
 
@@ -319,8 +325,14 @@ app.get("/download-ftp", async (req, res) => {
   await downloadFilesFromFTP();
   console.log("FTP download completed.");
   let rawData = await retriveDataFromFile();
+  const propertiesWithSlugs = rawData.map((property) => {
+    return {
+      ...property,
+      slug: generatePropertySlug(property),
+    };
+  });
   await PropertyModel.deleteMany();
-  await PropertyModel.insertMany(rawData);
+  await PropertyModel.insertMany(propertiesWithSlugs);
 
   //--------------- Calculating the price up down and saving it to database --------------------
   await priceReductionCheck();

@@ -17,7 +17,7 @@ propertyRouter.get("/", async (req, res) => {
     const filter = getFilterObj(query);
 
     // Controlling pagination
-    const itemsPerPage = 10;
+    const itemsPerPage = 12;
 
     let skipCount = 0;
     if (query.selectedPage) {
@@ -121,6 +121,26 @@ propertyRouter.get("/:id", async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.status(403).json({ message: "Something went wrong" });
+  }
+});
+
+// new route to get property by slug
+
+propertyRouter.get("/by-slug/:slug", async (req, res) => {
+  try {
+    const { slug } = req.params;
+    await connect();
+
+    const property = await PropertyModel.findOne({ slug: slug });
+
+    if (!property) {
+      return res.status(404).json({ message: "Property not found" });
+    }
+
+    return res.send(property);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Something went wrong" });
   }
 });
 

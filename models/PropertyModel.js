@@ -116,7 +116,11 @@ const PropertySchema = new mongoose.Schema({
   EPC_EIRP: String,
   TLS_INCENTIVE: String,
   TLS_SOCIALMEDIA: String,
-  "~": String,
+  slug: {
+    type: String,
+    unique: true,
+    index: true,
+  },
 });
 
 const PropertyModel = mongoose.model("properties", PropertySchema);
